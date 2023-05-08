@@ -7,6 +7,26 @@
 	{% block head %}{% endblock %}
 </head>
 <body>
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+	  		<div id="flash-container" class="flash-container">
+	  			<ul class=flashes>
+		    		{% for category, message in messages %}
+			      		<li class="{{ category }}">{{ message }}</li>
+			    	{% endfor %}
+			    </ul>
+			    <button id="flash-close-btn">X</button>	
+	  		</div>	    
+	  		<script type="text/javascript">
+	  			const flashContainer = document.getElementById("flash-container");
+	  			const flashContainerCloseBtn = document.getElementById("flash-close-btn");
+
+	  			flashContainerCloseBtn.addEventListener("click", () => {
+	  				flashContainer.classList.add("hide");
+	  			}); 	
+	  		</script>
+	  {% endif %}
+	{% endwith %}
 	{% block body %}{% endblock %}
 </body>
 </html>

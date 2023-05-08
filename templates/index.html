@@ -1,40 +1,93 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Task Master</title>
+    <title>Task Master</title>
 {% endblock %}
 
 {% block body %}
-<div class="content">
-    <h1 style="text-align: center">Task Master</h1>
-    {% if tasks|length < 1 %}
-    <h4 style="text-align: center">There are no tasks. Create one below!</h4>
-    {% else %}
-    <table>
-        <tr>
-            <th>Task</th>
-            <th>Added</th>
-            <th>Actions</th>
-        </tr>
-        {% for task in tasks %}
-            <tr>
-                <td>{{ task.content }}</td>
-                <td>{{ task.date_created.date() }}</td>
-                <td>
-                    <a href="/delete/{{task.id}}">Delete</a>
-                    <br>
-                    <a href="/update/{{task.id}}">Update</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
+    <div class="content">
+        <h1 style="text-align: center">Task Master</h1>
+        {% if tasks|length < 1 %}
+            <h4 style="text-align: center">There are no tasks. Create one below!</h4>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Task</th>
+                    <th>Added</th>
+                    <th>Actions</th>
+                </tr>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.content }}</td>
+                        <td>{{ task.date_created.date() }}</td>
+                        <td>
+                            <button class="editBtn" data-task-id="{{ task.id }}" data-task-content="{{ task.content }}">Edit</button>
+                            <button class="deleteBtn" data-task-id="{{ task.id }}">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
 
-    <div class="form">
-        <form action="/" method="POST">
-            <input type="text" name="content" id="content">
-            <input type="submit" value="Add Task">
-        </form>
+            <dialog id="updateDialog">
+                <h3>Update task</h3>
+                <form id="updateForm" method="POST">
+                    <input id="updateContentInput" type="text" name="content" value="" />
+                    <button formmethod="dialog" type="submit">Cancel</button>
+                    <button type="submit">Save</button>
+                  </form>
+            </dialog>
+            
+            <script type="text/javascript">
+                const updateDialog = document.getElementById("updateDialog");
+                const updateForm = document.getElementById("updateForm");
+                const updateContentInput = document.getElementById("updateContentInput");
+                const editBtns = document.getElementsByClassName("editBtn");
+
+                [...editBtns].forEach(item => {
+                    item.addEventListener("click", (e) => {
+                        const taskId = e.target.dataset.taskId;
+                        const taskContent = e.target.dataset.taskContent;
+
+                        updateForm.action = `/update/${taskId}`;
+                        updateContentInput.value = taskContent;
+                        updateDialog.showModal();
+                    });
+                });
+            </script>
+
+            <dialog id="deleteDialog">
+                <h3>Delete task</h3>
+                <p class="deletePrompt"></p>
+                <form id="deleteForm" method="POST">
+                    <p id="deletePrompt"></p>
+                    <button formmethod="dialog" type="submit">Cancel</button>
+                    <button type="submit">Delete</button>
+                </form>
+            </dialog>
+            
+            <script type="text/javascript">
+                const deleteDialog = document.getElementById("deleteDialog");
+                const deleteForm = document.getElementById("deleteForm");
+                const deletePrompt = document.getElementById("deletePrompt");
+                const deleteBtns = document.getElementsByClassName("deleteBtn");
+
+                [...deleteBtns].forEach(item => {
+                    item.addEventListener("click", (e) => {
+                        const taskId = e.target.dataset.taskId;
+
+                        deleteForm.action = `/delete/${taskId}`;
+                        deletePrompt.innerHTML = `Are you sure you want to delete task ${taskId}?`;
+                        deleteDialog.showModal();
+                    });
+                });
+            </script>
+        {% endif %}
+
+        <div class="form">
+            <form action="/" method="POST">
+                <input type="text" name="content" id="content">
+                <input type="submit" value="Add Task">
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

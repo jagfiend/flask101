@@ -3,6 +3,18 @@ body, html {
     font-family: sans-serif;
 }
 
+.flash-container {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    text-align: center;
+    width: 400px;
+}
+
+.hide {
+    display: none !important;
+}
+
 .content {
     margin: 0 auto;
     width: 400px;
